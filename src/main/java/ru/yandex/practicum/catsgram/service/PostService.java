@@ -2,6 +2,7 @@ package ru.yandex.practicum.catsgram.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.catsgram.dal.UserRepository;
 import ru.yandex.practicum.catsgram.exception.ConditionsNotMetException;
 import ru.yandex.practicum.catsgram.exception.NotFoundException;
 import ru.yandex.practicum.catsgram.model.Post;
@@ -13,12 +14,13 @@ import java.util.*;
 @Service
 public class PostService {
     private final Map<Long, Post> posts = new HashMap<>();
-    private final UserService userService;
+    //private final UserService userService;
+    private final UserRepository userRepository;
     // private final Comparator<Post> postDateComparator = Comparator.comparing(Post::getPostDate);
 
     @Autowired
-    public PostService(UserService userService) {
-        this.userService = userService;
+    public PostService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public Collection<Post> findAll(int size, String sort, int from) {
@@ -42,7 +44,7 @@ public class PostService {
             throw new ConditionsNotMetException("Описание не может быть пустым");
         }
 
-        userService.findById(post.getAuthorId())
+        userRepository.findById(post.getAuthorId())
                 .orElseThrow(() -> new ConditionsNotMetException("Автор с id = "
                         + post.getAuthorId() + " не найден"));
 
